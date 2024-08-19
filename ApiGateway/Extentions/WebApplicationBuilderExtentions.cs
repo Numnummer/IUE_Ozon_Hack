@@ -14,6 +14,7 @@ namespace ApiGateway.Extentions
                 x.AddRider(rider =>
                 {
                     rider.AddConsumer<ProductConsumer>();
+                    rider.AddProducer<SearchModel>("search-model");
                     rider.UsingKafka((context, config) =>
                     {
                         config.Host(kafkaHost);
