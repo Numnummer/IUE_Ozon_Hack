@@ -7,8 +7,7 @@ service RpcServer {
    }
 
    message DataRequest {
-     string userId = 1;
-     string queryId = 2;
+     string redirectUrl = 1;
      string searchedString = 3;
    }
 

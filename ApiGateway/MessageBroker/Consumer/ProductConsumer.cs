@@ -5,9 +5,11 @@ namespace ApiGateway.MessageBroker.Consumer
 {
     public class ProductConsumer : IConsumer<Product>
     {
-        public Task Consume(ConsumeContext<Product> context)
+        public async Task Consume(ConsumeContext<Product> context)
         {
-            throw new NotImplementedException();
+            var url = context.Message.RedirectUrl;
+            var httpClient = new HttpClient();
+            await httpClient.GetAsync(url);
         }
     }
 }
