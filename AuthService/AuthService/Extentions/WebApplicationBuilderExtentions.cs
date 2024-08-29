@@ -6,6 +6,7 @@ using AuthMicroservice.Database.Repository;
 using AuthMicroservice.Models.Auth.AuthTokens;
 using AuthMicroservice.Models.User;
 using AuthMicroservice.Services;
+using StackExchange.Redis;
 
 namespace AuthMicroservice.Extentions
 {
@@ -24,6 +25,5 @@ namespace AuthMicroservice.Extentions
         {
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         }
-
     }
 }

@@ -1,4 +1,5 @@
 using AuthMicroservice.AutoMapper;
+using AuthMicroservice.Configuration;
 using AuthMicroservice.CustomMiddleware;
 using AuthMicroservice.Database;
 using AuthMicroservice.Extentions;
@@ -16,6 +17,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
+builder.Configuration.AddSecrets();
+
 builder.Services.AddDbContext<UserDbContext>(opt =>
 opt.UseNpgsql(builder.Configuration.GetConnectionString("Users")));
 builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
