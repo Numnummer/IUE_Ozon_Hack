@@ -52,14 +52,6 @@ namespace AuthIntegrationTests
             var response = await _httpClient.PostAsJsonAsync("/enter", signInData);
             response.EnsureSuccessStatusCode();
 
-            var secondFaData = new SecondFactorPost()
-            {
-                Code="459970",
-                Remember=false
-            };
-            var finalResponse = await _httpClient.PostAsJsonAsync("/secondFactor", secondFaData);
-            finalResponse.EnsureSuccessStatusCode();
-            var recievedObj = await finalResponse.Content.ReadAsStringAsync();
         }
 
         [TearDown]

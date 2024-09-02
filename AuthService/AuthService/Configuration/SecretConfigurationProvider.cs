@@ -7,7 +7,7 @@ namespace AuthMicroservice.Configuration
     {
         public override void Load()
         {
-            var connectionString = "";
+            var connectionString = "localhost:6379";
             var connection = ConnectionMultiplexer.Connect(connectionString);
             var database = connection.GetDatabase();
             var keys = connection.GetServer(connectionString).Keys().ToArray();

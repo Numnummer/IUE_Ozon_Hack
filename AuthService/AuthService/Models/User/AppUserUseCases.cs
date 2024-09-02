@@ -19,27 +19,30 @@ namespace AuthMicroservice.Models.User
     {
         public async Task<AuthResult?> RegistrateUser(RegistrationUserData registrationUserData)
         {
-            var user = new AppUser()
+            var currentUser = new AppUser()
             {
                 Email = registrationUserData.Email,
                 UserName=registrationUserData.FullName,
             };
             logger?.LogInformation("Создаем пользователя");
-            var result = await userManager.CreateAsync(user, registrationUserData.Password);
+            var result = await userManager.CreateAsync(currentUser, registrationUserData.Password);
             logger?.LogInformation($"Результат: {result}");
             if (result.Succeeded)
             {
-                var authResult = await signInManager.PasswordSignInAsync(user, registrationUserData.Password, false, true);
+                var authResult = await signInManager
+                    .CheckPasswordSignInAsync(currentUser, registrationUserData.Password, true);
                 logger?.LogInformation(authResult.ToString());
                 if (authResult.Succeeded)
                 {
-                    return await authTokensUseCases.GenerateJwtAndRefreshTokensAsync(user);
+                    return await authTokensUseCases
+                        .GenerateJwtAndRefreshTokensAsync(currentUser);
                 }
-                if (authResult.IsNotAllowed && !user.EmailConfirmed)
+                if (authResult.IsNotAllowed && !currentUser.EmailConfirmed)
                 {
                     return new AuthResult()
                     {
-                        NeedTwoFactor = true
+                        NeedTwoFactor = true,
+                        UserId = await userManager.GetUserIdAsync(currentUser)
                     };
                 }
             }
@@ -51,7 +54,7 @@ namespace AuthMicroservice.Models.User
         public async Task SendEmailCodeAsync(string email)
         {
             var user = await userManager.FindByEmailAsync(email);
-            var token = await userManager.GenerateTwoFactorTokenAsync(user, "Email");
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
             var publishTask = publishEndpoint.Publish(
                     new EmailRequestDto(email, "Confirm your identity", token));
             var timeoutMilliseconds = 2000;
@@ -68,9 +71,9 @@ namespace AuthMicroservice.Models.User
 
         public async Task<AuthResult?> SecondFactorSignInAsync(SecondFactorPost data)
         {
-            var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+            var user = await userManager.FindByIdAsync(data.UserId);
             if (user == null) return null;
-            var result = await signInManager.TwoFactorSignInAsync("Email", data.Code, data.Remember, false);
+            var result = await userManager.ConfirmEmailAsync(user, data.Code);
             if (result.Succeeded)
                 return await authTokensUseCases.GenerateJwtAndRefreshTokensAsync(user);
             return null;
@@ -86,18 +89,19 @@ namespace AuthMicroservice.Models.User
 
         public async Task<AuthResult?> SignInUserAsync(SignInUserData signInUserData)
         {
-            var user = await userManager.FindByEmailAsync(signInUserData.Email);
-            if (user == null) return null;
-            var authResult = await signInManager.PasswordSignInAsync(user, signInUserData.Password, false, true);
+            var currentUser = await userManager.FindByEmailAsync(signInUserData.Email);
+            if (currentUser == null) return null;
+            var authResult = await signInManager.CheckPasswordSignInAsync(currentUser, signInUserData.Password, true);
             if (authResult.Succeeded)
             {
-                return await authTokensUseCases.GenerateJwtAndRefreshTokensAsync(user);
+                return await authTokensUseCases.GenerateJwtAndRefreshTokensAsync(currentUser);
             }
-            if (authResult.IsNotAllowed && !user.EmailConfirmed)
+            if (authResult.IsNotAllowed && !currentUser.EmailConfirmed)
             {
                 return new AuthResult()
                 {
-                    NeedTwoFactor = true
+                    NeedTwoFactor = true,
+                    UserId = await userManager.GetUserIdAsync(currentUser)
                 };
             }
             return null;

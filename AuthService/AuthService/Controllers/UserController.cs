@@ -64,21 +64,26 @@ namespace AuthMicroservice.Controllers
             if (result.NeedTwoFactor)
             {
                 logger.LogInformation("Необходимо подтверждение почты");
-                return RedirectToAction("SecondFactorEmail", new { email = signInUserData.Email });
+                return RedirectToAction("SecondFactorEmail", new
+                {
+                    email = signInUserData.Email,
+                    userId = result.UserId
+                });
             }
             return BadRequest();
         }
 
-        [HttpGet("secondFactor/{email}")]
-        public async Task<IActionResult> SecondFactorEmail(string email)
+        [HttpGet("secondFactor")]
+        public async Task<IActionResult> SecondFactorEmail([FromQuery] string email,
+            [FromQuery] string userId)
         {
             await appUserUseCases.SendEmailCodeAsync(email);
             logger.LogInformation($"Код подтверждения отправлен сервису нотификации");
-            return Ok("Код отправлен");
+            return Ok($"Код отправлен для пользователя {userId}");
         }
 
         [HttpPost("secondFactor")]
-        public async Task<IActionResult> SecondFactorEmail(SecondFactorPost postData)
+        public async Task<IActionResult> SecondFactorEmail1(SecondFactorPost postData)
         {
             var result = await appUserUseCases.SecondFactorSignInAsync(postData);
             if (result!=null)
