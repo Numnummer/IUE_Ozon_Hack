@@ -11,6 +11,7 @@ namespace ApiGateway.Extentions
             var kafkaHost = builder.Configuration["Kafka:Host"];
             builder.Services.AddMassTransit(x =>
             {
+                x.UsingInMemory();
                 x.AddRider(rider =>
                 {
                     rider.AddConsumer<ProductConsumer>();
