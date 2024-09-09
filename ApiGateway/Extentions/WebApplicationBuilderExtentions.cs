@@ -1,31 +1,27 @@
-﻿using ApiGateway.MessageBroker.Consumer;
-using ApiGateway.MessageBroker.Model;
-using MassTransit;
+﻿using ApiGateway.MessageBroker.Model;
+using Confluent.Kafka;
 
 namespace ApiGateway.Extentions
 {
     public static class WebApplicationBuilderExtentions
     {
-        public static void AddMessageBroker(this WebApplicationBuilder builder)
+        public static void AddKafka(this WebApplicationBuilder builder)
         {
-            var kafkaHost = builder.Configuration["Kafka:Host"];
-            builder.Services.AddMassTransit(x =>
+            var consumerConfig = new ConsumerConfig
             {
-                x.UsingInMemory();
-                x.AddRider(rider =>
-                {
-                    rider.AddConsumer<ProductConsumer>();
-                    rider.AddProducer<SearchModel>("search-model");
-                    rider.UsingKafka((context, config) =>
-                    {
-                        config.Host(kafkaHost);
-                        config.TopicEndpoint<Product>("product", "asd1", e =>
-                        {
-                            e.ConfigureConsumer<ProductConsumer>(context);
-                        });
-                    });
-                });
-            });
+                BootstrapServers = builder.Configuration["Kafka:Host"],
+                GroupId = "main",
+                AutoOffsetReset = AutoOffsetReset.Earliest
+            };
+            var producerConfig = new ProducerConfig
+            {
+                BootstrapServers = builder.Configuration["Kafka:Host"],
+                ClientId = "1"
+            };
+            builder.Services.AddSingleton(new ConsumerBuilder<string, string>
+                (consumerConfig));
+            builder.Services.AddSingleton(new ProducerBuilder<string, string>
+                (producerConfig));
         }
     }
 }
