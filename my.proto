@@ -1,0 +1,12 @@
+service RpcServer {
+  rpc GetData (DataRequest) returns (DataResponse);
+}
+
+message DataRequest {
+  string redirestUrl = 1;
+  string searchedString = 3;
+}
+
+message DataResponse {
+  string status = 1;
+}
