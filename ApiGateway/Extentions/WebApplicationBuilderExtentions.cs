@@ -19,9 +19,9 @@ namespace ApiGateway.Extentions
                 ClientId = "1"
             };
             builder.Services.AddSingleton(new ConsumerBuilder<string, string>
-                (consumerConfig));
+                (consumerConfig).Build());
             builder.Services.AddSingleton(new ProducerBuilder<string, string>
-                (producerConfig));
+                (producerConfig).Build());
         }
     }
 }

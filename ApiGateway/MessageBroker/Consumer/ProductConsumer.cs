@@ -7,18 +7,19 @@ using static Confluent.Kafka.ConfigPropertyNames;
 namespace ApiGateway.MessageBroker.Consumer
 {
     public class ProductConsumer(IConsumer<string, string> consumer)
-        : IHostedService
+        : BackgroundService
     {
-        private readonly IConsumer<string, string> _consumer = consumer;
-        public async Task StartAsync(CancellationToken cancellationToken)
+        //private readonly IConsumer<string, string> _consumer = consumer;
+        
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _consumer.Subscribe("product");
+            //consumer.Subscribe("product");
 
             await Task.Run(async () =>
             {
-                while (!cancellationToken.IsCancellationRequested)
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    var consumeResult = _consumer.Consume(cancellationToken);
+                    var consumeResult = consumer.Consume(stoppingToken);
                     if (consumeResult is null)
                     {
                         return;
@@ -32,14 +33,7 @@ namespace ApiGateway.MessageBroker.Consumer
                     var httpClient = new HttpClient();
                     await httpClient.GetAsync(url);
                 }
-            }, cancellationToken);
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _consumer.Unsubscribe();
-            _consumer.Dispose();
-            return Task.CompletedTask;
+            }, stoppingToken);
         }
     }
 }
