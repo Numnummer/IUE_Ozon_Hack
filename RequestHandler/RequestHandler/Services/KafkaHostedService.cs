@@ -1,6 +1,6 @@
 ﻿using RequestHandler.Application;
 
-namespace RequestHandler.Services.Kafka
+namespace RequestHandler.Services
 {
     public class KafkaHostedService : BackgroundService
     {
@@ -14,7 +14,7 @@ namespace RequestHandler.Services.Kafka
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var scope = _scopeFactory.CreateScope();
-            var kafkaConsumerService = scope.ServiceProvider.GetRequiredService<IConsumerService>();
+            var kafkaConsumerService = scope.ServiceProvider.GetRequiredService<IRequestsConsumerService>();
             kafkaConsumerService.StartConsuming(stoppingToken);
             return Task.CompletedTask;
         }

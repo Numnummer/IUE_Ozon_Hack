@@ -1,4 +1,4 @@
-﻿namespace RequestHandler.Services.Kafka
+﻿namespace RequestHandler.Services
 {
     public class KafkaSettings
     {

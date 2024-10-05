@@ -1,6 +1,6 @@
 ﻿namespace RequestHandler.Application
 {
-    public interface IConsumerService
+    public interface IRequestsConsumerService
     {
         void StartConsuming(CancellationToken cancellationToken);
     }
