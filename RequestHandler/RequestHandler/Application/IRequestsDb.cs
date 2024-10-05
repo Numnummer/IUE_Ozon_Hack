@@ -21,6 +21,6 @@
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string FinishRequest(string key);
+        public string GetRequestsByKey(string key);
     }
 }

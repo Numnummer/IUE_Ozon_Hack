@@ -14,8 +14,8 @@ namespace RequestHandler.Services
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var scope = _scopeFactory.CreateScope();
-            var kafkaConsumerService = scope.ServiceProvider.GetRequiredService<IRequestsConsumerService>();
-            kafkaConsumerService.StartConsuming(stoppingToken);
+            var kafkaConsumerService = scope.ServiceProvider.GetRequiredService<IConsumerService>();
+            kafkaConsumerService.StartRequestsConsuming(stoppingToken);
             return Task.CompletedTask;
         }
     }

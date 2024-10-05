@@ -12,7 +12,7 @@ namespace RequestHandler.Repositories
             requestsDb = connectionMultiplexer.GetDatabase();
         }
 
-        public string FinishRequest(string key)
+        public string GetRequestsByKey(string key)
         {
             throw new NotImplementedException();
         }

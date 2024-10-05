@@ -5,10 +5,10 @@ namespace RequestHandler.Services.MessageHandlers
 {
     public class MessageHandler : IMessageHandler
     {
-        private readonly IHandledRequestsProducer _producer;
+        private readonly IProduceService _producer;
         private readonly IRequestsDb _requestsDb;
 
-        public MessageHandler(IHandledRequestsProducer producer, 
+        public MessageHandler(IProduceService producer, 
             IRequestsDb requestsDb)
         {
             _producer = producer;
@@ -28,7 +28,7 @@ namespace RequestHandler.Services.MessageHandlers
 
             if (!_requestsDb.IsRequestProcessing(product.Name.ToLower()))
             {
-                _producer.Produce(product.Name.ToLower());
+                _producer.ProduceHandledRequest(product.Name.ToLower());
                 Console.WriteLine("Send Message to ML");
             }
 

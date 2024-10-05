@@ -15,10 +15,11 @@ namespace RequestHandler
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));
+            builder.AddKafkaProducer();
 
-            builder.Services.AddScoped<IRequestsConsumerService, KafkaRequestsConsumerService>();
+            builder.Services.AddScoped<IConsumerService, KafkaConsumerService>();
             builder.Services.AddScoped<IMessageHandler, MessageHandler>();
-            builder.Services.AddScoped<IHandledRequestsProducer, KafkaHandledRequestsProducer>();
+            builder.Services.AddScoped<IProduceService, KafkaProducerService>();
             builder.Services.AddScoped<IRequestsDb, RequestsRedisDB>();
             builder.Services.AddHostedService<KafkaHostedService>();
 
